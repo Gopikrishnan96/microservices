@@ -1,0 +1,54 @@
+# Kubernetes manifest for deploying the Iris prediction FastAPI app to AKS
+# Replace <your-registry>/iris-api:tag with your container image and adjust namespace/replicas as needed
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: iris-api-deployment
+  labels:
+    app: iris-api
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: iris-api
+  template:
+    metadata:
+      labels:
+        app: iris-api
+    spec:
+      # uncomment and set if using a private registry
+      # imagePullSecrets:
+      # - name: my-registry-secret
+      containers:
+        - name: iris-api
+          # TODO: change this to your image
+          image: <your-registry>/iris-api:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8001
+              name: http
+              protocol: TCP
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8001
+            initialDelaySeconds: 15
+            periodSeconds: 20
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8001
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            failureThreshold: 3
+      
