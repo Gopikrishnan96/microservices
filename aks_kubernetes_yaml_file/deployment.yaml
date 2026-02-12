@@ -9,7 +9,7 @@ metadata:
   labels:
     app: iris-api
 spec:
-  replicas: 3
+  replicas: 5
   selector:
     matchLabels:
       app: iris-api
